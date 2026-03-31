@@ -6,7 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-
 public class Product {
     
     @Id
@@ -17,7 +16,7 @@ public class Product {
     private double price;
     private String description;
 
-    public Product() {}
+    protected Product() {}
 
     public Product(String name, double price, String description) {
         this.name = name;

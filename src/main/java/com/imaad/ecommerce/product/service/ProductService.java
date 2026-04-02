@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.imaad.ecommerce.product.Product;
 import com.imaad.ecommerce.product.repository.ProductRepository;
@@ -38,6 +37,16 @@ public class ProductService {
     public Product newProduct(Product newProduct) {
         return productRepository.save(newProduct);
     }
+
+    public Optional<Product> updateProduct(Product updatedProduct, Long id) {
+        return productRepository.findById(id)
+            .map(product -> {
+                product.setName(updatedProduct.getName());
+                product.setPrice(updatedProduct.getPrice());
+                product.setDescription(updatedProduct.getDescription());
+                return productRepository.save(product); 
+            });
+        }
 
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);

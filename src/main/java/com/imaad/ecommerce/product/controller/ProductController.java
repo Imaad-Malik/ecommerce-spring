@@ -22,7 +22,7 @@ public class ProductController {
     private final ProductService productService;
 
     // Dependency Injection
-    public ProductController(ProductService productService, ProductRepository productRepository) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
     }
 

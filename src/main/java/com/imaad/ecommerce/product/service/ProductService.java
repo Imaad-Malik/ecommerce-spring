@@ -3,52 +3,76 @@ package com.imaad.ecommerce.product.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 
 import com.imaad.ecommerce.product.Product;
+import com.imaad.ecommerce.product.dto.CreateProductRequest;
+import com.imaad.ecommerce.product.dto.ProductResponse;
+import com.imaad.ecommerce.product.dto.UpdateProductRequest;
+import com.imaad.ecommerce.product.mapper.ProductMapper;
 import com.imaad.ecommerce.product.repository.ProductRepository;
-
-import jakarta.annotation.PostConstruct;
 
 @Service
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository) 
+    {
         this.productRepository = productRepository;
     }
 
-    @PostConstruct
-    public void init() {
-        productRepository.save(new Product("Laptop", 12.12, "Work Laptop"));
-        productRepository.save(new Product("Laptop2", 12.12, "Work Laptop"));
-        productRepository.save(new Product("Laptop3", 12.12, "Work Laptop"));
+    public List<ProductResponse> getAllProducts() 
+    {    
+        return productRepository.findAll()
+            .stream()
+            .map(product -> productMapper.mapToResponse(product))
+            .toList();
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public ProductResponse getProductById(Long id) 
+    {    
+        Product product = productRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Product not found."));
+        
+        ProductResponse productResponse = productMapper.mapToResponse(product);
+
+        return productResponse;
+    }
+    
+    public ProductResponse createProduct(CreateProductRequest newProduct) 
+    {    
+        Product product = new Product(
+            newProduct.name(),
+            newProduct.price(),
+            newProduct.description());
+
+        Product saved = productRepository.save(product);
+
+        return productMapper.mapToResponse(saved);     
     }
 
-    public Optional<Product> getProductById(Long id) {
-        return productRepository.findById(id);
+    public ProductResponse updateProduct(UpdateProductRequest updatedProduct, Long id) 
+    {
+        Product product = productRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Product not found."));
+
+        product.setName(updatedProduct.name());
+        product.setPrice(updatedProduct.price());
+        product.setDescription(updatedProduct.description());
+
+        Product saved = productRepository.save(product);
+
+        return productMapper.mapToResponse(saved);
     }
 
-    public Product newProduct(Product newProduct) {
-        return productRepository.save(newProduct);
-    }
-
-    public Optional<Product> updateProduct(Product updatedProduct, Long id) {
-        return productRepository.findById(id)
-            .map(product -> {
-                product.setName(updatedProduct.getName());
-                product.setPrice(updatedProduct.getPrice());
-                product.setDescription(updatedProduct.getDescription());
-                return productRepository.save(product); 
-            });
-        }
-
-    public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
+    public void deleteProduct(Long id) 
+    {
+        Product product = productRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Product not found."));
+        
+        productRepository.delete(product);
     }
 }

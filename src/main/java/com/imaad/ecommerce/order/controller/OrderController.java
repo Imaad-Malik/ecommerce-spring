@@ -1,4 +1,4 @@
-package com.imaad.ecommerce.order;
+package com.imaad.ecommerce.order.controller;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,37 +8,45 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.imaad.ecommerce.order.dto.CreateOrderRequest;
+import com.imaad.ecommerce.order.dto.OrderResponse;
+import com.imaad.ecommerce.order.dto.UpdateOrderRequest;
 import com.imaad.ecommerce.order.service.OrderService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-public class OrderController {
+public class OrderController 
+{
     
     private final OrderService orderService;
     
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService) 
+    {
         this.orderService = orderService;
     }
 
     @PostMapping("/orders")
-    public Order createOrder(@RequestBody Order order) {
-        return orderService.createOrder(order.getProductId(), order.getQuantity());
+    public OrderResponse createOrder(@RequestBody CreateOrderRequest request) 
+    {
+        return orderService.createOrder(request);
     }
 
     @GetMapping("/orders")
-    public List<Order> getOrders() {
+    public List<OrderResponse> getOrders() 
+    {
         return orderService.getAllOrders();
     }
 
     @DeleteMapping("/orders/{id}")
-    public void deleteOrder(@PathVariable Long id) {
+    public void deleteOrder(@PathVariable Long id) 
+    {
         orderService.deleteOrder(id);
     }
 
     @PutMapping("/orders/{id}")
-    public Optional<Order> updatedOrder(@RequestBody Order updateOrder, @PathVariable Long id) {
+    public OrderResponse updatedOrder(@RequestBody UpdateOrderRequest updateOrder, @PathVariable Long id) 
+    {
         return orderService.updateOrder(updateOrder, id);
     }
 }
